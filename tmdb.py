@@ -4,9 +4,9 @@ import pandas as pd
 import json
 from wordcloud import wordcloud
 import matplotlib.pyplot as plt
+import seaborn as sns
 
-
-def loadData():
+def load_data():
     # 加载数据
     credits = pd.read_csv('data/tmdb_5000_credits.csv')
     movies = pd.read_csv('data/tmdb_5000_movies.csv')
@@ -19,14 +19,14 @@ def loadData():
     return total
 
 
-def getName(x):
+def get_name(x):
     name = []
     for item in x:
         name.append(item['name'])
     return '|'.join(name)
 
 
-def cleanData(total):
+def clean_data(total):
     # 不需要字段
     drop_title = ['homepage', 'id', 'original_language', 'original_title', 'overview', 'spoken_languages', 'status',
                   'tagline', 'movie_id', 'cast', 'crew']
@@ -44,7 +44,7 @@ def cleanData(total):
         total[column] = total[column].map(json.loads)
 
     for column in json_column:
-        total[column] = total[column].map(getName)
+        total[column] = total[column].map(get_name)
 
     print(total.info())
 
@@ -69,7 +69,7 @@ def get_data_genre(total):
     return genre_df
 
 
-def getGenreYear(total):
+def get_genre_year(total):
     '''
     获取种类和时间之间的关系
     :param total:
@@ -81,17 +81,17 @@ def getGenreYear(total):
     return genre_by_year
 
 
-def getAndShowGenreYear(total):
+def get_and_show_genre_year(total):
     '''
     获取类别和时间之间的关系
     :param total:
     :return:
     '''
-    genre_by_year = getGenreYear(total)
-    showGenreYeas(genre_by_year)
+    genre_by_year = get_genre_year(total)
+    show_genre_year(genre_by_year)
 
 
-def showGenreYeas(genre_by_year):
+def show_genre_year(genre_by_year):
     plt.rcParams['font.sans-serif'] = ['SimHei']
     fig = plt.figure(figsize=(12, 6))
     plt.plot(genre_by_year, label=genre_by_year.columns)
@@ -103,22 +103,22 @@ def showGenreYeas(genre_by_year):
     plt.show()
 
 
-def getGenreCount(total):
+def get_genre_count(total):
     '''获取类别统计信息
     '''
-    genre_by_year = getGenreYear(total)
+    genre_by_year = get_genre_year(total)
     genre_sum = genre_by_year.sum(axis=0).sort_values(ascending=True)
     return genre_sum
 
 
-def getAndShowGenreCount(total):
+def get_and_show_genre_count(total):
     '''获取类别统计信息并展示
     '''
-    genre_sum = getGenreCount(total)
-    showGenSum(genre_sum)
+    genre_sum = get_genre_count(total)
+    show_gen_sum(genre_sum)
 
 
-def showGenSum(genre_sum):
+def show_gen_sum(genre_sum):
     print(genre_sum)
     plt.rcParams['font.sans-serif'] = ['SimHei']
     genre_sum.plot.barh(label='genre', figsize=(12, 6))
@@ -128,7 +128,7 @@ def showGenSum(genre_sum):
     plt.show()
 
 
-def getGenreProfit(total):
+def get_genre_profit(total):
     profit_df = pd.DataFrame()
     total['profit'] = total['revenue'] - total['budget']
     genre_set = get_genre_set(total)
@@ -146,7 +146,7 @@ def getGenreProfit(total):
     return profit_by_genre
 
 
-def showGenreProfit(profit_by_genre):
+def show_genre_profit(profit_by_genre):
     plt.rcParams['font.sans-serif'] = ['SimHei']
     profit_by_genre.plot.barh(label='genre', figsize=(12, 6))
     plt.title('电影类型利润分布图', fontsize=20)
@@ -155,9 +155,9 @@ def showGenreProfit(profit_by_genre):
     plt.show()
 
 
-def getAndShowGenreProfit(total):
-    profit_by_genre = getGenreProfit(total)
-    showGenreProfit(profit_by_genre)
+def get_and_show_genre_profit(total):
+    profit_by_genre = get_genre_profit(total)
+    show_genre_profit(profit_by_genre)
 
 
 def get_original_recompose(total):
@@ -175,7 +175,7 @@ def get_original_recompose(total):
     return original_recompose
 
 
-def showOriRecom1(original_recomposee):
+def show_ori_recom1(original_recomposee):
     plt.rcParams['font.sans-serif'] = ['SimHei']
     fig = plt.figure(figsize=(12, 6))
     data_count = original_recomposee.loc[original_recomposee.index, 'count']
@@ -185,7 +185,7 @@ def showOriRecom1(original_recomposee):
     plt.show()
 
 
-def showOriRecom2(original_recomposee):
+def show_ori_recom2(original_recomposee):
     # 绘制利润柱状图
     plt.rcParams['font.sans-serif'] = ['SimHei']
     x = list(range(len(original_recomposee.index)))
@@ -207,13 +207,13 @@ def showOriRecom2(original_recomposee):
     plt.show()
 
 
-def getAndShowOriRcom(total):
+def get_and_show_ori_rcom(total):
     original_recomposee = get_original_recompose(total)
     # showOriRecom(original_recomposee)
-    showOriRecom2(original_recomposee)
+    show_ori_recom2(original_recomposee)
 
 
-def getCountryCount(total):
+def get_country_count(total):
     country_set = set()
     for x in total['production_countries']:
         country_set.update(x.split('|'))
@@ -226,7 +226,7 @@ def getCountryCount(total):
     return country_df
 
 
-def showCountryCount(country_df):
+def show_country_count(country_df):
     rate = country_df / country_df.sum()
     others = 0.01
     # 只留下比例大于0.01的国家
@@ -240,9 +240,9 @@ def showCountryCount(country_df):
     plt.show()
 
 
-def getAndShowCountryCount(total):
-    country_df = getCountryCount(total)
-    showCountryCount(country_df)
+def get_and_show_country_count(total):
+    country_df = get_country_count(total)
+    show_country_count(country_df)
 
 
 def get_and_show_keywords(total):
@@ -341,11 +341,34 @@ def get_and_show_company_genre(total):
     company_genre = get_company_genre(total)
     show_company_genre(company_genre)
 
+def get_and_show_correlation(total):
+    '''
+    计算相关系数
+    :param total:
+    :return:
+    '''
+    cols = ['budget','popularity','release_date','runtime','vote_average','vote_count','revenue']
+    corrs = total[cols].corr()
+    # get the  correlation coefficents between revenue and others
+    revenue = corrs['revenue']
+    revenue = revenue.drop(['revenue']).sort_values(ascending=False)
+    # get the factors strong correlative with factor revenue
+    revenue = revenue[revenue > 0.5]
+    fig = plt.figure(figsize=(18,6))
+    colors = ['y','g','r']
+    i = 1
+    for factor in revenue.index:
+        ax = plt.subplot(1,3,i)
+        ax = sns.regplot(x=factor,y='revenue',data=total[cols],color=colors[i-1])
+        ax.text(0,2.5e9,s='r='+str(revenue[factor]))
+        i += 1
+    plt.show()
+
 if __name__ == '__main__':
-    total = loadData()
-    cleanData(total)
+    total = load_data()
+    clean_data(total)
     # getAndShowGenreYear(total)
-    getGenreProfit(total)
+    get_genre_profit(total)
     # getAndShowGenreProfit(total)
     # get_original_recompose(total)
     # getAndShowOriRcom(total)
@@ -357,4 +380,5 @@ if __name__ == '__main__':
     # get_and_show_popular_runtime(total)
     #get_and_show_popular_vote(total)
     #get_company_genre(total)
-    get_and_show_company_genre(total)
+    #get_and_show_company_genre(total)
+    get_and_show_correlation(total)
