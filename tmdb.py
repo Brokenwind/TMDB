@@ -317,10 +317,29 @@ def get_company_data(total):
 def get_company_genre(total):
     genre_set = get_genre_set(total)
     company_list, company_df = get_company_data(total)
-    company_genre = pd.DataFrame(index=company_list)
+    # 当设置了索引是哪些的时候，设置数据时就会对应填入
+    company_genre = pd.DataFrame(index=genre_set)
     for company in company_list:
-        print(company_df.groupby(company).sum())
+        company_genre[company] = company_df.groupby(company).sum().loc[1]
+        company_genre[company]
+    return company_genre
 
+def show_company_genre(company_genre):
+    plt.style.use('ggplot')
+    fig = plt.figure(figsize=(16,8))
+    ax1 = fig.add_subplot(1,2,1)
+    plt.pie(company_genre['Universal Pictures'],labels=company_genre.index,autopct='%.1f%%')
+    plt.title('Universal Pictures')
+
+    ax2 = fig.add_subplot(1,2,2)
+    plt.pie(company_genre['Paramount Pictures'],labels=company_genre.index,autopct='%.1f%%')
+    plt.title('Paramount Pictures')
+
+    plt.show()
+
+def get_and_show_company_genre(total):
+    company_genre = get_company_genre(total)
+    show_company_genre(company_genre)
 
 if __name__ == '__main__':
     total = loadData()
@@ -337,4 +356,5 @@ if __name__ == '__main__':
     # get_and_show_popular_genre(total)
     # get_and_show_popular_runtime(total)
     #get_and_show_popular_vote(total)
-    get_company_genre(total)
+    #get_company_genre(total)
+    get_and_show_company_genre(total)
